@@ -13,7 +13,6 @@ public class JsonUtil {
 
     public static RootJson jsonToNewsList(String json) {
         Gson newsListJsonGson = new Gson();
-        /*return newsListJsonGson.fromJson(json, NewsListJson.class);*/
         return newsListJsonGson.fromJson(json, RootJson.class);
     }
 }

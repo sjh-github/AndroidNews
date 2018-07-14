@@ -82,8 +82,8 @@ public class NewsActivity extends AppCompatActivity
 
         //初始兴趣初始化
         if (UserInfo.username.equals("sjh")) {
-            HttpInfo.itNum = 1;
-            HttpInfo.footballNum = 1;
+            /*HttpInfo.technologyNum = 1;
+            HttpInfo.funNum = 1;*/
         }
         interestReCal("推荐");
 
@@ -133,6 +133,18 @@ public class NewsActivity extends AppCompatActivity
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+
+                String timestamp = String.valueOf(System.currentTimeMillis());
+                String signature;
+                try {
+                    signature = MD5Util.getMD5Str(HttpInfo.SecretKeyValue + timestamp + HttpInfo.AccessKeyValue);
+
+                } catch (Exception e) {
+                    Toast.makeText(NewsActivity.this, "数据加密错误", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                    return;
+                }
+
                 refreshLayout.setRefreshing(true);
                 String tag = actionBar.getTitle().toString();
                 String url;
@@ -142,28 +154,28 @@ public class NewsActivity extends AppCompatActivity
                         requestNewRecommend();
                         break;
                     case TagInfo.TECHNOLOGY:
-                        url = HttpInfo.URL_TECHNOLOGY;
-                        requestNew(url, false);
+                        url = "https://api.xinwen.cn/news/hot?category=Tech&size=" + HttpInfo.NUM + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+                        requestNew(url, false, true);
                         break;
                     case TagInfo.FUN:
-                        url = HttpInfo.URL_FUN;
-                        requestNew(url, false);
+                        url = "https://api.xinwen.cn/news/hot?category=Entertainment&size=" + HttpInfo.NUM + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+                        requestNew(url, false, true);
                         break;
                     case TagInfo.MILITARY:
-                        url = HttpInfo.URL_MILITARY;
-                        requestNew(url, false);
+                        url = "https://api.xinwen.cn/news/hot?category=Military&size=" + HttpInfo.NUM + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+                        requestNew(url, false, true);
                         break;
                     case TagInfo.IT:
-                        url = HttpInfo.URL_IT;
-                        requestNew(url, false);
+                        url = "https://api.xinwen.cn/news/hot?category=Society&size=" + HttpInfo.NUM + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+                        requestNew(url, false, true);
                         break;
                     case TagInfo.FOOTBALL:
-                        url = HttpInfo.URL_FOOTBALL;
-                        requestNew(url, false);
+                        url = "https://api.xinwen.cn/news/hot?category=Society&size=" + HttpInfo.NUM + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+                        requestNew(url, false, true);
                         break;
                     case TagInfo.NBA:
-                        url = HttpInfo.URL_NBA;
-                        requestNew(url, false);
+                        url = "https://api.xinwen.cn/news/hot?category=World&size=" + HttpInfo.NUM + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+                        requestNew(url, false, true);
                         break;
                     default:
                         url = HttpInfo.URL_RECOMMEND;
@@ -171,7 +183,7 @@ public class NewsActivity extends AppCompatActivity
                 }
             }
         });
-        /*requestNewRecommend();*/
+        requestNewRecommend();
     }
 
     private void interestReCal(String interestTag) {
@@ -236,7 +248,7 @@ public class NewsActivity extends AppCompatActivity
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
 
-        return  true;
+        return true;
     }
 
     public void closeDrawer() {
@@ -249,16 +261,6 @@ public class NewsActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        //ActionBar
-        /*final ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null){
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(R.string.recommend);*/
-
-
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_recommend) {
@@ -393,33 +395,51 @@ public class NewsActivity extends AppCompatActivity
                 if (url.equals(HttpInfo.URL_RECOMMEND)) {
                     requestNewRecommend();
                 } else {
-                    requestNew(url, false);
+                    requestNew(url, false, false);
                 }
                 refreshLayout.setRefreshing(true);
             }
     }
 
-    public void requestNew(final String url, final boolean isRecommend) {
-        String timestamp = String.valueOf(System.currentTimeMillis());
-        String signature;
-        String newUrl = "";
-        try {
-            signature = MD5Util.getMD5Str(HttpInfo.SecretKeyValue + timestamp + HttpInfo.AccessKeyValue);
+    public void requestNew(final String url, final boolean isRecommend, final boolean refresh) {
 
-        } catch (Exception e) {
-            Toast.makeText(NewsActivity.this, "数据加密错误", Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-            return;
+        String newUrl = url;
+        if (!refresh && !isRecommend) {
+            String timestamp = String.valueOf(System.currentTimeMillis());
+            String signature;
+            try {
+                signature = MD5Util.getMD5Str(HttpInfo.SecretKeyValue + timestamp + HttpInfo.AccessKeyValue);
+
+            } catch (Exception e) {
+                Toast.makeText(NewsActivity.this, "数据加密错误", Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+                return;
+            }
+            switch (url) {
+                case HttpInfo.URL_TECHNOLOGY:
+                    newUrl = "https://api.xinwen.cn/news/hot?category=Tech&size=" + HttpInfo.NUM + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+                    break;
+                case HttpInfo.URL_FUN:
+                    newUrl = "https://api.xinwen.cn/news/hot?category=Entertainment&size=" + HttpInfo.NUM + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+                    break;
+                case HttpInfo.URL_MILITARY:
+                    newUrl = "https://api.xinwen.cn/news/hot?category=Military&size=" + HttpInfo.NUM + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+                    break;
+                case HttpInfo.URL_IT:
+                    newUrl = "https://api.xinwen.cn/news/hot?category=Society&size=" + HttpInfo.NUM + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+                    break;
+                case HttpInfo.URL_FOOTBALL:
+                    newUrl = "https://api.xinwen.cn/news/hot?category=Sport&size=" + HttpInfo.NUM + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+                    break;
+                case HttpInfo.URL_NBA:
+                    newUrl = "https://api.xinwen.cn/news/hot?category=World&size=" + HttpInfo.NUM + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+                    break;
+                default:
+                    newUrl = "https://api.xinwen.cn/news/hot?category=Tech&size=" + HttpInfo.NUM + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+            }
         }
-        switch (url) {
-            case HttpInfo.URL_NBA:
-                newUrl = "https://api.xinwen.cn/news/hot?category=Politics&size=10&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
-                break;
-            default:
 
-        }
-
-
+        System.out.println("***REQUESTNEW:" + newUrl);
         HttpUtil.sendOkHttpRequest(newUrl, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -434,35 +454,6 @@ public class NewsActivity extends AppCompatActivity
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String responseTest = response.body().string();
-                /*final int code = newsListJson.getCode();
-                final String msg = newsListJson.getMsg();
-                final NewsListJson newsListJson = JsonUtil.jsonToNewsList(responseTest);
-                if (code == 200) {
-                    //清除现有的新闻
-                    if (!isRecommend) {
-                        NewsInfo.newsArrayList.clear();
-                    }
-                    for (NewsJson newsJson : newsListJson.getNewsList()) {
-                        News news = new News(newsJson.getUrl(), newsJson.getTitle(), newsJson.getDescription(), newsJson.getPicUrl());
-                        NewsInfo.newsArrayList.add(news);
-                    }
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            newsAdapter.notifyDataSetChanged();
-                            refreshLayout.setRefreshing(false);
-                            list_news.setSelection(0);
-                        };
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            *//*Toast.makeText(NewsActivity.this, R.string.getNewsError,Toast.LENGTH_SHORT).show();*//*
-                            refreshLayout.setRefreshing(false);
-                        }
-                    });
-                }*/
                 final RootJson rootJson = JsonUtil.jsonToNewsList(responseTest);
                 boolean success = rootJson.isSuccess();
                 if (success) {
@@ -487,7 +478,7 @@ public class NewsActivity extends AppCompatActivity
                             newsAdapter.notifyDataSetChanged();
                             refreshLayout.setRefreshing(false);
                             list_news.setSelection(0);
-                        };
+                        }
                     });
                 } else {
                     refreshLayout.setRefreshing(false);
@@ -498,30 +489,51 @@ public class NewsActivity extends AppCompatActivity
 
     //获取推荐新闻
     private void requestNewRecommend() {
+
         NewsInfo.newsArrayList.clear();
-        String URL_TECHNOLOGY = "http://api.tianapi.com/keji/?key=" + HttpInfo.KEY + "&num=" + HttpInfo.technologyNum + "&rand=1";
-        String URL_FUN = "http://api.tianapi.com/huabian/?key=" + HttpInfo.KEY + "&num=" + HttpInfo.funNum + "&rand=1";
-        String URL_MILITARY = "http://api.tianapi.com/military/?key=" + HttpInfo.KEY + "&num=" + HttpInfo.militaryNum + "&rand=1";
-        String URL_IT = "http://api.tianapi.com/it/?key=" + HttpInfo.KEY + "&num=" + HttpInfo.itNum + "&rand=1";
-        String URL_FOOTBALL = "http://api.tianapi.com/football/?key=" + HttpInfo.KEY + "&num=" + HttpInfo.footballNum + "&rand=1";
-        String URL_NBA = "http://api.tianapi.com/nba/?key=" + HttpInfo.KEY + "&num=" + HttpInfo.nbaNum + "&rand=1";
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        String signature;
+        try {
+            signature = MD5Util.getMD5Str(HttpInfo.SecretKeyValue + timestamp + HttpInfo.AccessKeyValue);
+        } catch (Exception e) {
+            Toast.makeText(NewsActivity.this, "数据加密错误", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+            return;
+        }
+
+        String URL_TECHNOLOGY = "https://api.xinwen.cn/news/hot?category=Tech&size=" + HttpInfo.technologyNum + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+        String URL_FUN = "https://api.xinwen.cn/news/hot?category=Entertainment&size=" + HttpInfo.funNum + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+        String URL_MILITARY = "https://api.xinwen.cn/news/hot?category=Military&size=" + HttpInfo.militaryNum + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+        String URL_IT = "https://api.xinwen.cn/news/hot?category=Society&size=" + HttpInfo.itNum + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+        String URL_FOOTBALL = "https://api.xinwen.cn/news/hot?category=Sport&size=" + HttpInfo.footballNum + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+        String URL_NBA = "https://api.xinwen.cn/news/hot?category=World&size=" + HttpInfo.nbaNum + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+
+        System.out.println(HttpInfo.technologyNum + " - " + HttpInfo.funNum + " - " + HttpInfo.militaryNum + " - " +
+        HttpInfo.itNum + " - " + HttpInfo.footballNum + " - " + HttpInfo.nbaNum);
+
         if(HttpInfo.technologyNum != 0) {
-            requestNew(URL_TECHNOLOGY, true);
+            System.out.println("请求科技");
+            requestNew(URL_TECHNOLOGY, true, false);
         }
         if (HttpInfo.funNum != 0) {
-            requestNew(URL_FUN, true);
+            System.out.println("请求娱乐");
+            requestNew(URL_FUN, true, false);
         }
         if (HttpInfo.militaryNum != 0) {
-            requestNew(URL_MILITARY, true);
+            System.out.println("请求军事");
+            requestNew(URL_MILITARY, true, false);
         }
         if (HttpInfo.itNum != 0) {
-            requestNew(URL_IT, true);
+            System.out.println("请求社会");
+            requestNew(URL_IT, true, false);
         }
         if (HttpInfo.footballNum != 0) {
-            requestNew(URL_FOOTBALL, true);
+            System.out.println("请求体育");
+            requestNew(URL_FOOTBALL, true, false);
         }
         if (HttpInfo.nbaNum != 0) {
-            requestNew(URL_NBA, true);
+            System.out.println("请求国际");
+            requestNew(URL_NBA, true, false);
         }
     }
 }

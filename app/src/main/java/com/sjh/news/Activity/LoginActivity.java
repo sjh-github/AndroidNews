@@ -49,13 +49,14 @@ public class LoginActivity extends Activity {
         btn_login_login = findViewById(R.id.btn_login_login);
         btn_register_login = findViewById(R.id.btn_register_login);
         btn_forgetPassword_login = findViewById(R.id.btn_forgetPassword_login);
+        //人员信息初始化
         User user = new User("sjh", "123456", "252355189@qq.com");
         Map<String, Integer> map = new HashMap<>();
-        map.put(Interests.TECHNOLOGY, 0);
-        map.put(Interests.FUN, 0);
+        map.put(Interests.TECHNOLOGY, 1);
+        map.put(Interests.FUN, 1);
         map.put(Interests.MILITARY, 0);
-        map.put(Interests.IT, 1);
-        map.put(Interests.FOOTBALL, 1);
+        map.put(Interests.IT, 0);
+        map.put(Interests.FOOTBALL, 0);
         map.put(Interests.NBA, 0);
         user.setUserInterest(map);
         UserInfo.userArrayList.add(user);

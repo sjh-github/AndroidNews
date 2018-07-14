@@ -22,12 +22,12 @@
     <string name="defaultEmail">252355189@qq.com</string>
     
     <string name="recommend">推荐</string>
-    <string name="technology">体育</string>
+    <string name="technology">科技</string>
     <string name="military">军事</string>
-    <string name="it">IT资讯</string>
-    <string name="fun">VR资讯</string>
-    <string name="football">足球</string>
-    <string name="nba">健康</string>
+    <string name="it">社会</string>
+    <string name="fun">娱乐</string>
+    <string name="football">体育</string>
+    <string name="nba">国际</string>
     <string name="customTag">自定义</string>
 
     <string name="submit">提交</string>

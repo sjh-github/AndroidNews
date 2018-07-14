@@ -30,40 +30,6 @@ public class HttpUtil {
         this.httpUrl = httpUrl;
         this.context = context;
     }
-/*
-    @Override
-    public Object call() throws Exception {
-        BufferedReader reader = null;
-        String result = null;
-        StringBuffer sbf = new StringBuffer();
-
-        try {
-            URL url = new URL(httpUrl);
-            HttpURLConnection connection = (HttpURLConnection) url
-                    .openConnection();
-            connection.setRequestMethod("GET");
-            InputStream is = connection.getInputStream();
-            reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            String strRead = null;
-            while ((strRead = reader.readLine()) != null) {
-                sbf.append(strRead);
-                sbf.append("\r\n");
-            }
-            reader.close();
-            result = sbf.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (result == null) {
-            Toast.makeText(context, R.string.err, Toast.LENGTH_LONG).show();
-            return false;
-        }
-        //Gson解析
-        NewsListJson newsListJson = JsonUtil.jsonToNewsList(result);
-        //添加数据
-        NewsDataUtil.addNews(newsListJson);
-        return true;
-    }*/
 
     //网络请求
     public static void sendOkHttpRequest(String address, okhttp3.Callback callback){

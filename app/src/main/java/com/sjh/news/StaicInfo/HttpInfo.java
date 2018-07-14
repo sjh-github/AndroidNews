@@ -6,6 +6,8 @@ package com.sjh.news.StaicInfo;
 
 public class HttpInfo {
     final public static String KEY = "2bb70d514061c77d14a8cdfdf8c35259";
+
+
     public static Integer NUM = 50;
 
     public static Integer technologyNum = 0;
@@ -14,16 +16,6 @@ public class HttpInfo {
     public static Integer militaryNum = 0;
     public static Integer footballNum = 0;
     public static Integer nbaNum = 0;
-
-
-    /*public static final String URL_RECOMMEND = "URL_RECOMMEND";
-    public static final String URL_TECHNOLOGY = "http://api.tianapi.com/tiyu/?key=" + KEY + "&num=" + NUM + "&rand=1";
-    public static final String URL_FUN = "http://api.tianapi.com/vr/?key=" + KEY + "&num=" + NUM + "&rand=1";
-    public static final String URL_MILITARY = "http://api.tianapi.com/military/?key=" + KEY + "&num=" + NUM + "&rand=1";
-    public static final String URL_IT = "http://api.tianapi.com/it/?key=" + KEY + "&num=" + NUM + "&rand=1";
-    public static final String URL_FOOTBALL = "http://api.tianapi.com/football/?key=" + KEY + "&num=" + NUM + "&rand=1";
-    public static String URL_NBA = "http://api.tianapi.com/health/?key=" + KEY + "&num=" + NUM + "&rand=1";*/
-
 
     public static final String URL_RECOMMEND = "URL_RECOMMEND";
     public static final String URL_TECHNOLOGY = "URL_TECHNOLOGY";
