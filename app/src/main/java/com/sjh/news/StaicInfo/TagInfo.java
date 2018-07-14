@@ -6,12 +6,14 @@ package com.sjh.news.StaicInfo;
 
 public class TagInfo {
     final public static String RECOMMEND = "推荐";
-    final public static String TECHNOLOGY = "科技";
-    final public static String FUN = "娱乐";
+    final public static String TECHNOLOGY = "体育";
+    final public static String FUN = "VR资讯";
     final public static String MILITARY = "军事";
     final public static String IT = "IT资讯";
     final public static String FOOTBALL = "足球";
-    final public static String NBA = "NBA";
+    final public static String NBA = "健康";
 
     public static String currentTag = "推荐";
+
+    public static String customTag = "";
 }

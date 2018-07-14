@@ -1,5 +1,6 @@
 package com.sjh.news.Activity;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,11 +24,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sjh.news.Adapter.NewsAdapter;
-import com.sjh.news.Adapter.NewsListAdapter;
+import com.sjh.news.Domain.Interests;
 import com.sjh.news.Domain.News;
-import com.sjh.news.Domain.NewsJson;
-import com.sjh.news.Domain.NewsListJson;
-import com.sjh.news.Executor.CachedExecutorService;
+import com.sjh.news.Domain.User;
+import com.sjh.news.Domain.fx.DataJson;
+import com.sjh.news.Domain.fx.RootJson;
 import com.sjh.news.R;
 import com.sjh.news.StaicInfo.HttpInfo;
 import com.sjh.news.StaicInfo.NewsInfo;
@@ -34,10 +36,10 @@ import com.sjh.news.StaicInfo.TagInfo;
 import com.sjh.news.StaicInfo.UserInfo;
 import com.sjh.news.Util.HttpUtil;
 import com.sjh.news.Util.JsonUtil;
+import com.sjh.news.Util.MD5Util;
 
 import java.io.IOException;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -54,6 +56,9 @@ public class NewsActivity extends AppCompatActivity
     private ListView list_news;
     private LayoutInflater groupPollingAddress;
     public NewsAdapter newsAdapter;
+
+    private ActionBar actionBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +80,12 @@ public class NewsActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //初始兴趣初始化
+        if (UserInfo.username.equals("sjh")) {
+            HttpInfo.itNum = 1;
+            HttpInfo.footballNum = 1;
+        }
+        interestReCal("推荐");
 
         if (!"username".equals(UserInfo.username) && txt_username != null) {
             System.out.println("Set UserName");
@@ -86,7 +97,7 @@ public class NewsActivity extends AppCompatActivity
         }
 
         //ActionBar
-        final ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         if (actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
@@ -98,6 +109,10 @@ public class NewsActivity extends AppCompatActivity
             Intent intent = new Intent(NewsActivity.this, ContentActivity.class);
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+                final String interestTag = actionBar.getTitle().toString();
+                interestReCal(interestTag);
+
                 News news = NewsInfo.newsArrayList.get(position);
                 intent.putExtra("title", news.getNewsTitle());
                 intent.putExtra("uri", news.getUrl());
@@ -124,31 +139,79 @@ public class NewsActivity extends AppCompatActivity
                 switch (tag) {
                     case TagInfo.RECOMMEND:
                         url = HttpInfo.URL_RECOMMEND;
+                        requestNewRecommend();
                         break;
                     case TagInfo.TECHNOLOGY:
                         url = HttpInfo.URL_TECHNOLOGY;
+                        requestNew(url, false);
                         break;
                     case TagInfo.FUN:
                         url = HttpInfo.URL_FUN;
+                        requestNew(url, false);
                         break;
                     case TagInfo.MILITARY:
                         url = HttpInfo.URL_MILITARY;
+                        requestNew(url, false);
                         break;
                     case TagInfo.IT:
                         url = HttpInfo.URL_IT;
+                        requestNew(url, false);
                         break;
                     case TagInfo.FOOTBALL:
                         url = HttpInfo.URL_FOOTBALL;
+                        requestNew(url, false);
                         break;
                     case TagInfo.NBA:
                         url = HttpInfo.URL_NBA;
+                        requestNew(url, false);
                         break;
                     default:
                         url = HttpInfo.URL_RECOMMEND;
+                        requestNewRecommend();
                 }
-                requestNew(url);
             }
         });
+        /*requestNewRecommend();*/
+    }
+
+    private void interestReCal(String interestTag) {
+        int total = 0;
+        User currentUser = null;
+        for (User u : UserInfo.userArrayList) {
+            if (u.getUsername().equals(UserInfo.username)) {
+                currentUser = u;
+                break;
+            }
+        }
+        switch (interestTag) {
+            case TagInfo.TECHNOLOGY:
+                currentUser.getUserInterest().put(Interests.TECHNOLOGY, currentUser.getUserInterest().get(Interests.TECHNOLOGY) + 1);
+                break;
+            case TagInfo.FUN:
+                currentUser.getUserInterest().put(Interests.FUN, currentUser.getUserInterest().get(Interests.FUN) + 1);
+                break;
+            case TagInfo.MILITARY:
+                currentUser.getUserInterest().put(Interests.MILITARY, currentUser.getUserInterest().get(Interests.MILITARY) + 1);
+                break;
+            case TagInfo.FOOTBALL:
+                currentUser.getUserInterest().put(Interests.FOOTBALL, currentUser.getUserInterest().get(Interests.FOOTBALL) + 1);
+                break;
+            case TagInfo.IT:
+                currentUser.getUserInterest().put(Interests.IT, currentUser.getUserInterest().get(Interests.IT) + 1);
+                break;
+            case TagInfo.NBA:
+                currentUser.getUserInterest().put(Interests.NBA, currentUser.getUserInterest().get(Interests.NBA) + 1);
+                break;
+        }
+        for (Integer num : currentUser.getUserInterest().values()) {
+            total += num;
+        }
+        HttpInfo.technologyNum = (HttpInfo.NUM - 1) * currentUser.getUserInterest().get(Interests.TECHNOLOGY)/total;
+        HttpInfo.funNum = (HttpInfo.NUM - 1) * currentUser.getUserInterest().get(Interests.FUN)/total;
+        HttpInfo.itNum = (HttpInfo.NUM - 1) * currentUser.getUserInterest().get(Interests.IT)/total;
+        HttpInfo.militaryNum = (HttpInfo.NUM - 1) * currentUser.getUserInterest().get(Interests.MILITARY)/total;
+        HttpInfo.footballNum = (HttpInfo.NUM - 1) * currentUser.getUserInterest().get(Interests.FOOTBALL)/total;
+        HttpInfo.nbaNum = (HttpInfo.NUM - 1) * currentUser.getUserInterest().get(Interests.NBA)/total;
     }
 
     @Override
@@ -165,7 +228,15 @@ public class NewsActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.login, menu);
-        return true;
+
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.news_search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+
+        return  true;
     }
 
     public void closeDrawer() {
@@ -179,12 +250,12 @@ public class NewsActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         //ActionBar
-        final ActionBar actionBar = getSupportActionBar();
+        /*final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(R.string.recommend);
+        actionBar.setTitle(R.string.recommend);*/
 
 
         // Handle navigation view item clicks here.
@@ -239,17 +310,54 @@ public class NewsActivity extends AppCompatActivity
             TagInfo.currentTag = TagInfo.NBA;
             closeDrawer();
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_logout) {
 
-//            closeDrawer();
-//            refreshLayout.setRefreshing(true);
+            closeDrawer();
+            Intent toLoginPageIntent = new Intent(NewsActivity.this, LoginActivity.class);
+            startActivity(toLoginPageIntent);
+        }/* else if (id == R.id.nav_custom) {
 
-        } else if (id == R.id.nav_send) {
+            closeDrawer();
+            //自定义标签未设置
+            if (TagInfo.customTag.equals("")) {
+                final EditText inputServer = new EditText(this);
+                inputServer.setFocusable(true);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("请输入自定义关键字")
+                        .setIcon(R.drawable.logo_without_text)
+                        .setView(inputServer)
+                        .setNegativeButton("取消", null);
+                builder.setPositiveButton("保存",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                String inputName = inputServer.getText().toString();
+                                TagInfo.customTag = inputName;
+                            }
+                        });
+                builder.show();
+            } else {
 
-//            closeDrawer();
-//            refreshLayout.setRefreshing(true);
+            }
 
-        }
+        } else if (id == R.id.nav_updateCustomTag) {
+            closeDrawer();
+            final EditText inputServer = new EditText(this);
+            inputServer.setText(TagInfo.customTag);
+            inputServer.setFocusable(true);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("请输入自定义关键字")
+                    .setIcon(R.drawable.logo_without_text)
+                    .setView(inputServer)
+                    .setNegativeButton("取消", null);
+            builder.setPositiveButton("保存",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            String inputName = inputServer.getText().toString();
+                            TagInfo.customTag = inputName;
+                        }
+                    });
+            builder.show();
+        }*/
         return true;
     }
 
@@ -282,19 +390,43 @@ public class NewsActivity extends AppCompatActivity
                     currentUrl = HttpInfo.URL_RECOMMEND;
             }
             if (!url.equals(currentUrl)) {
-                requestNew(url);
+                if (url.equals(HttpInfo.URL_RECOMMEND)) {
+                    requestNewRecommend();
+                } else {
+                    requestNew(url, false);
+                }
                 refreshLayout.setRefreshing(true);
             }
     }
 
-    public void requestNew(String url) {
-        HttpUtil.sendOkHttpRequest(url, new Callback() {
+    public void requestNew(final String url, final boolean isRecommend) {
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        String signature;
+        String newUrl = "";
+        try {
+            signature = MD5Util.getMD5Str(HttpInfo.SecretKeyValue + timestamp + HttpInfo.AccessKeyValue);
+
+        } catch (Exception e) {
+            Toast.makeText(NewsActivity.this, "数据加密错误", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+            return;
+        }
+        switch (url) {
+            case HttpInfo.URL_NBA:
+                newUrl = "https://api.xinwen.cn/news/hot?category=Politics&size=10&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+                break;
+            default:
+
+        }
+
+
+        HttpUtil.sendOkHttpRequest(newUrl, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(NewsActivity.this, R.string.getNewsError, Toast.LENGTH_SHORT).show();
+                        /*Toast.makeText(NewsActivity.this, R.string.getNewsError, Toast.LENGTH_SHORT).show();*/
                     }
                 });
             }
@@ -302,12 +434,14 @@ public class NewsActivity extends AppCompatActivity
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String responseTest = response.body().string();
-                final NewsListJson newsListJson = JsonUtil.jsonToNewsList(responseTest);
-                final int code = newsListJson.getCode();
+                /*final int code = newsListJson.getCode();
                 final String msg = newsListJson.getMsg();
+                final NewsListJson newsListJson = JsonUtil.jsonToNewsList(responseTest);
                 if (code == 200) {
                     //清除现有的新闻
-                    NewsInfo.newsArrayList.clear();
+                    if (!isRecommend) {
+                        NewsInfo.newsArrayList.clear();
+                    }
                     for (NewsJson newsJson : newsListJson.getNewsList()) {
                         News news = new News(newsJson.getUrl(), newsJson.getTitle(), newsJson.getDescription(), newsJson.getPicUrl());
                         NewsInfo.newsArrayList.add(news);
@@ -316,20 +450,78 @@ public class NewsActivity extends AppCompatActivity
                         @Override
                         public void run() {
                             newsAdapter.notifyDataSetChanged();
-                            list_news.setSelection(0);
                             refreshLayout.setRefreshing(false);
+                            list_news.setSelection(0);
                         };
                     });
                 } else {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(NewsActivity.this, R.string.getNewsError,Toast.LENGTH_SHORT).show();
+                            *//*Toast.makeText(NewsActivity.this, R.string.getNewsError,Toast.LENGTH_SHORT).show();*//*
                             refreshLayout.setRefreshing(false);
                         }
                     });
+                }*/
+                final RootJson rootJson = JsonUtil.jsonToNewsList(responseTest);
+                boolean success = rootJson.isSuccess();
+                if (success) {
+                    if (!isRecommend) {
+                        NewsInfo.newsArrayList.clear();
+                    }
+                    DataJson dataJson = rootJson.getDataJson();
+                    List<com.sjh.news.Domain.fx.NewsJson> newsJsonList = dataJson.getNewsJson();
+                    News news = null;
+                    for (com.sjh.news.Domain.fx.NewsJson newsJson : newsJsonList) {
+                        if (newsJson.getImgUrl() != null && newsJson.getImgUrl().size() >= 1) {
+                            news = new News(newsJson.getUrl(), newsJson.getTitle(), newsJson.getSource(), newsJson.getImgUrl().get(0));
+                        } else {
+                            news = new News(newsJson.getUrl(), newsJson.getTitle(), newsJson.getSource(), null);
+                        }
+
+                        NewsInfo.newsArrayList.add(news);
+                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            newsAdapter.notifyDataSetChanged();
+                            refreshLayout.setRefreshing(false);
+                            list_news.setSelection(0);
+                        };
+                    });
+                } else {
+                    refreshLayout.setRefreshing(false);
                 }
             }
         });
+    }
+
+    //获取推荐新闻
+    private void requestNewRecommend() {
+        NewsInfo.newsArrayList.clear();
+        String URL_TECHNOLOGY = "http://api.tianapi.com/keji/?key=" + HttpInfo.KEY + "&num=" + HttpInfo.technologyNum + "&rand=1";
+        String URL_FUN = "http://api.tianapi.com/huabian/?key=" + HttpInfo.KEY + "&num=" + HttpInfo.funNum + "&rand=1";
+        String URL_MILITARY = "http://api.tianapi.com/military/?key=" + HttpInfo.KEY + "&num=" + HttpInfo.militaryNum + "&rand=1";
+        String URL_IT = "http://api.tianapi.com/it/?key=" + HttpInfo.KEY + "&num=" + HttpInfo.itNum + "&rand=1";
+        String URL_FOOTBALL = "http://api.tianapi.com/football/?key=" + HttpInfo.KEY + "&num=" + HttpInfo.footballNum + "&rand=1";
+        String URL_NBA = "http://api.tianapi.com/nba/?key=" + HttpInfo.KEY + "&num=" + HttpInfo.nbaNum + "&rand=1";
+        if(HttpInfo.technologyNum != 0) {
+            requestNew(URL_TECHNOLOGY, true);
+        }
+        if (HttpInfo.funNum != 0) {
+            requestNew(URL_FUN, true);
+        }
+        if (HttpInfo.militaryNum != 0) {
+            requestNew(URL_MILITARY, true);
+        }
+        if (HttpInfo.itNum != 0) {
+            requestNew(URL_IT, true);
+        }
+        if (HttpInfo.footballNum != 0) {
+            requestNew(URL_FOOTBALL, true);
+        }
+        if (HttpInfo.nbaNum != 0) {
+            requestNew(URL_NBA, true);
+        }
     }
 }

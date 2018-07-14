@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sjh.news.Domain.User;
 import com.sjh.news.Executor.CachedExecutorService;
 import com.sjh.news.R;
 import com.sjh.news.StaicInfo.UserInfo;
@@ -112,19 +113,35 @@ public class RegisterActivity extends Activity {
                 username.length() > 0 && email.length() > 0 && emailConfirmCode.length() > 0 && password.length() > 0 && passwordConfirm.length() > 0) {
             //密码与确认密码一致性判断
             if (password.equals(passwordConfirm)) {
-                Toast.makeText(RegisterActivity.this, username + " - " + email + " - " + emailConfirmCode
-                        + " - " + password + " - " + passwordConfirm, Toast.LENGTH_LONG).show();
-                //注册成功，记录基本信息
-                UserInfo.username = username;
-                UserInfo.email = email;
-                UserInfo.password = password;
-                Intent toInterestChoiceIntent = new Intent(RegisterActivity.this, InterestChoiceActivity.class);
-                startActivity(toInterestChoiceIntent);
+                //检测用户名是否已有
+                if (usernameCheck(username)) {
+                    Toast.makeText(RegisterActivity.this, "已存在该用户名", Toast.LENGTH_LONG).show();
+                    return;
+                } else {
+                    //注册成功，记录基本信息
+                    UserInfo.username = username;
+                    UserInfo.email = email;
+                    UserInfo.password = password;
+                    Intent toInterestChoiceIntent = new Intent(RegisterActivity.this, InterestChoiceActivity.class);
+                    startActivity(toInterestChoiceIntent);
+                }
             } else {
                 Toast.makeText(RegisterActivity.this, "密码不一致", Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(RegisterActivity.this, "请正确输入", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * 检测是否已有用户名
+     */
+    private boolean usernameCheck(String username) {
+        for (User user : UserInfo.userArrayList) {
+            if (user.getUsername().equals(username)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -22,7 +22,7 @@ import okhttp3.Request;
  * Created by 25235 on 2018/7/11.
  */
 
-public class HttpUtil implements Callable {
+public class HttpUtil {
     private String httpUrl;
     private Context context;
 
@@ -30,7 +30,7 @@ public class HttpUtil implements Callable {
         this.httpUrl = httpUrl;
         this.context = context;
     }
-
+/*
     @Override
     public Object call() throws Exception {
         BufferedReader reader = null;
@@ -63,7 +63,7 @@ public class HttpUtil implements Callable {
         //添加数据
         NewsDataUtil.addNews(newsListJson);
         return true;
-    }
+    }*/
 
     //网络请求
     public static void sendOkHttpRequest(String address, okhttp3.Callback callback){

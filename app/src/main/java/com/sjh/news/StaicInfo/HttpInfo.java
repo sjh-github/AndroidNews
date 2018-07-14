@@ -8,15 +8,39 @@ public class HttpInfo {
     final public static String KEY = "2bb70d514061c77d14a8cdfdf8c35259";
     public static Integer NUM = 50;
 
-    public static String URL_RECOMMEND = "";
-    public static String URL_TECHNOLOGY = "http://api.tianapi.com/keji/?key=" + KEY + "&num=" + NUM + "&rand=1";
-    public static String URL_FUN = "http://api.tianapi.com/huabian/?key=" + KEY + "&num=" + NUM + "&rand=1";
-    public static String URL_MILITARY = "http://api.tianapi.com/military/?key=" + KEY + "&num=" + NUM + "&rand=1";
-    public static String URL_IT = "http://api.tianapi.com/it/?key=" + KEY + "&num=" + NUM + "&rand=1";
-    public static String URL_FOOTBALL = "http://api.tianapi.com/football/?key=" + KEY + "&num=" + NUM + "&rand=1";
-    public static String URL_NBA = "http://api.tianapi.com/nba/?key=" + KEY + "&num=" + NUM + "&rand=1";
+    public static Integer technologyNum = 0;
+    public static Integer funNum = 0;
+    public static Integer itNum = 0;
+    public static Integer militaryNum = 0;
+    public static Integer footballNum = 0;
+    public static Integer nbaNum = 0;
 
-    public static Boolean getNewData = false;
+
+    /*public static final String URL_RECOMMEND = "URL_RECOMMEND";
+    public static final String URL_TECHNOLOGY = "http://api.tianapi.com/tiyu/?key=" + KEY + "&num=" + NUM + "&rand=1";
+    public static final String URL_FUN = "http://api.tianapi.com/vr/?key=" + KEY + "&num=" + NUM + "&rand=1";
+    public static final String URL_MILITARY = "http://api.tianapi.com/military/?key=" + KEY + "&num=" + NUM + "&rand=1";
+    public static final String URL_IT = "http://api.tianapi.com/it/?key=" + KEY + "&num=" + NUM + "&rand=1";
+    public static final String URL_FOOTBALL = "http://api.tianapi.com/football/?key=" + KEY + "&num=" + NUM + "&rand=1";
+    public static String URL_NBA = "http://api.tianapi.com/health/?key=" + KEY + "&num=" + NUM + "&rand=1";*/
+
+
+    public static final String URL_RECOMMEND = "URL_RECOMMEND";
+    public static final String URL_TECHNOLOGY = "URL_TECHNOLOGY";
+    public static final String URL_FUN = "URL_FUN";
+    public static final String URL_MILITARY = "URL-MILITARY";
+    public static final String URL_IT = "URL_IT";
+    public static final String URL_FOOTBALL = "URL_FOOTBALL";
+    public static final String URL_NBA = "URL_NBA";
+
+
+
+
     public static Integer code = 0;
     public static String msg = "";
+
+
+
+    public static String SecretKeyValue = "37b26552006147bbb0427d4dcb2ee996";
+    public static String AccessKeyValue = "fFZK5gezvwnEZ8CV";
 }

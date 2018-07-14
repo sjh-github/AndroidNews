@@ -1,5 +1,7 @@
 package com.sjh.news.StaicInfo;
 
+import com.sjh.news.Domain.User;
+
 import java.util.ArrayList;
 
 /**
@@ -11,5 +13,7 @@ public class UserInfo {
     public static String email = "email";
     public static String password = "password";
 
-    public static ArrayList<String> intersetArrayList = new ArrayList<>();
+
+    //本机用户列表
+    public static ArrayList<User> userArrayList = new ArrayList<>();
 }
