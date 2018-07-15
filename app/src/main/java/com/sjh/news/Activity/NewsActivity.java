@@ -80,11 +80,6 @@ public class NewsActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //初始兴趣初始化
-        if (UserInfo.username.equals("sjh")) {
-            /*HttpInfo.technologyNum = 1;
-            HttpInfo.funNum = 1;*/
-        }
         interestReCal("推荐");
 
         if (!"username".equals(UserInfo.username) && txt_username != null) {
@@ -178,8 +173,8 @@ public class NewsActivity extends AppCompatActivity
                         requestNew(url, false, true);
                         break;
                     default:
-                        url = HttpInfo.URL_RECOMMEND;
-                        requestNewRecommend();
+                        url = "https://api.xinwen.cn/news/search?q=" + TagInfo.SEARCH + "&size=" + HttpInfo.NUM + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
+                        requestNew(url, false, true);
                 }
             }
         });
@@ -247,6 +242,36 @@ public class NewsActivity extends AppCompatActivity
                 (SearchView) menu.findItem(R.id.news_search).getActionView();
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
+        searchView.setSubmitButtonEnabled(true);//显示提交按钮
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //提交按钮的点击事件
+                String timestamp = String.valueOf(System.currentTimeMillis());
+                String signature;
+                try {
+                    signature = MD5Util.getMD5Str(HttpInfo.SecretKeyValue + timestamp + HttpInfo.AccessKeyValue);
+                } catch (Exception e) {
+                    Toast.makeText(NewsActivity.this, "数据加密错误", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                    return false;
+                }
+                String searchURL = "https://api.xinwen.cn/news/search?q=" + query + "&size=" + HttpInfo.NUM + "&signature=" + signature + "&order=relevance&timestamp=" + timestamp +"&access_key=fFZK5gezvwnEZ8CV";
+                requestNew(searchURL, false, true);
+                refreshLayout.setRefreshing(true);
+                actionBar.setTitle(query);
+                TagInfo.SEARCH = query;
+                TagInfo.currentTag = TagInfo.SEARCH;
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //当输入框内容改变的时候回调
+                return true;
+            }
+        });
+
 
         return true;
     }
@@ -389,7 +414,7 @@ public class NewsActivity extends AppCompatActivity
                     currentUrl = HttpInfo.URL_NBA;
                     break;
                 default:
-                    currentUrl = HttpInfo.URL_RECOMMEND;
+                    currentUrl = HttpInfo.URL_SEARCH;
             }
             if (!url.equals(currentUrl)) {
                 if (url.equals(HttpInfo.URL_RECOMMEND)) {
@@ -438,8 +463,7 @@ public class NewsActivity extends AppCompatActivity
                     newUrl = "https://api.xinwen.cn/news/hot?category=Tech&size=" + HttpInfo.NUM + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
             }
         }
-
-        System.out.println("***REQUESTNEW:" + newUrl);
+        System.out.println("***url: " + newUrl);
         HttpUtil.sendOkHttpRequest(newUrl, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -508,31 +532,23 @@ public class NewsActivity extends AppCompatActivity
         String URL_FOOTBALL = "https://api.xinwen.cn/news/hot?category=Sport&size=" + HttpInfo.footballNum + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
         String URL_NBA = "https://api.xinwen.cn/news/hot?category=World&size=" + HttpInfo.nbaNum + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
 
-        System.out.println(HttpInfo.technologyNum + " - " + HttpInfo.funNum + " - " + HttpInfo.militaryNum + " - " +
-        HttpInfo.itNum + " - " + HttpInfo.footballNum + " - " + HttpInfo.nbaNum);
 
         if(HttpInfo.technologyNum != 0) {
-            System.out.println("请求科技");
             requestNew(URL_TECHNOLOGY, true, false);
         }
         if (HttpInfo.funNum != 0) {
-            System.out.println("请求娱乐");
             requestNew(URL_FUN, true, false);
         }
         if (HttpInfo.militaryNum != 0) {
-            System.out.println("请求军事");
             requestNew(URL_MILITARY, true, false);
         }
         if (HttpInfo.itNum != 0) {
-            System.out.println("请求社会");
             requestNew(URL_IT, true, false);
         }
         if (HttpInfo.footballNum != 0) {
-            System.out.println("请求体育");
             requestNew(URL_FOOTBALL, true, false);
         }
         if (HttpInfo.nbaNum != 0) {
-            System.out.println("请求国际");
             requestNew(URL_NBA, true, false);
         }
     }

@@ -5,6 +5,7 @@ package com.sjh.news.StaicInfo;
  */
 
 public class TagInfo {
+    public static String SEARCH = "搜索";
     final public static String RECOMMEND = "推荐";
     final public static String TECHNOLOGY = "科技";
     final public static String FUN = "娱乐";

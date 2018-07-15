@@ -17,6 +17,7 @@ public class HttpInfo {
     public static Integer footballNum = 0;
     public static Integer nbaNum = 0;
 
+    public static final String URL_SEARCH = "URL_SEARCH";
     public static final String URL_RECOMMEND = "URL_RECOMMEND";
     public static final String URL_TECHNOLOGY = "URL_TECHNOLOGY";
     public static final String URL_FUN = "URL_FUN";
