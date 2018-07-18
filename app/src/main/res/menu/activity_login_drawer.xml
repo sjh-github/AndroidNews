@@ -32,23 +32,23 @@
             android:id="@+id/nav_nba"
             android:icon="@drawable/ic_menu_camera"
             android:title="@string/nba" />
-        <!--<item
+        <item
             android:id="@+id/nav_custom"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/customTag"/>-->
+            android:title="@string/customTag"/>
 
     </group>
 
     <item android:title="个人功能">
         <menu>
-            <!--<item
+            <item
                 android:id="@+id/nav_updateCustomTag"
                 android:icon="@drawable/ic_menu_manage"
-                android:title="修改标签" />-->
+                android:title="@string/updateCustomTag" />
             <item
                 android:id="@+id/nav_logout"
                 android:icon="@drawable/ic_menu_share"
-                android:title="退出" />
+                android:title="@string/logout" />
         </menu>
     </item>
 

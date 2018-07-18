@@ -51,4 +51,14 @@ public class User {
     public void setUserInterest(Map<String, Integer> userInterest) {
         this.userInterest = userInterest;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", userInterest=" + userInterest.keySet().toString() + "," + userInterest.values() +
+                '}';
+    }
 }

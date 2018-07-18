@@ -1,7 +1,10 @@
 package com.sjh.news.Activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -32,6 +35,7 @@ public class LoginActivity extends Activity {
 
     private String username;
     private String password;
+    //private SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,14 +56,19 @@ public class LoginActivity extends Activity {
         //人员信息初始化
         User user = new User("sjh", "123456", "252355189@qq.com");
         Map<String, Integer> map = new HashMap<>();
-        map.put(Interests.TECHNOLOGY, 1);
+        map.put(Interests.TECHNOLOGY, 0);
         map.put(Interests.FUN, 1);
-        map.put(Interests.MILITARY, 0);
+        map.put(Interests.MILITARY, 1);
         map.put(Interests.IT, 0);
         map.put(Interests.FOOTBALL, 0);
         map.put(Interests.NBA, 0);
         user.setUserInterest(map);
         UserInfo.userArrayList.add(user);
+        //数据库初始化
+        //db = openOrCreateDatabase("user.db", Context.MODE_PRIVATE, null);
+        //db.execSQL("DROP TABLE IF EXISTS userdb");
+        //db.execSQL("create table if not exists userdb (username text primary key, password text, email text, technology integer, fun integer, military integer, it integer, football integer, nba integer)");
+
     }
 
     /**
@@ -106,6 +115,17 @@ public class LoginActivity extends Activity {
      * 登陆验证
      */
     private boolean login(String username, String password) {
+       /* Cursor userCursor = db.query("userdb", new String[]{"username", "password", "email"}, null, null, null, null, null);
+        if (userCursor.moveToFirst()) {
+           for (int i = 0; i < userCursor.getCount(); i++) {
+               userCursor.move(i);
+               String dbusername = userCursor.getString(userCursor.getColumnIndex("username"));
+               String dbpassword = userCursor.getString(userCursor.getColumnIndex("password"));
+               String dbemail = userCursor.getString(userCursor.getColumnIndex("email"));
+               UserInfo.userArrayList.add(new User(dbusername, dbpassword, dbemail));
+           }
+        }
+        userCursor.close();*/
         for (User user : UserInfo.userArrayList) {
             if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
                 return true;

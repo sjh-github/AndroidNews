@@ -25,6 +25,7 @@ public class HttpInfo {
     public static final String URL_IT = "URL_IT";
     public static final String URL_FOOTBALL = "URL_FOOTBALL";
     public static final String URL_NBA = "URL_NBA";
+    public static final String URL_CUSTOM = "URL_CUSTOM";
 
 
 

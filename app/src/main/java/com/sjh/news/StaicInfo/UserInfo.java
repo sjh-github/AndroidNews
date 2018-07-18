@@ -14,6 +14,5 @@ public class UserInfo {
     public static String password = "password";
 
 
-    //本机用户列表
     public static ArrayList<User> userArrayList = new ArrayList<>();
 }

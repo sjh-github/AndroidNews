@@ -10,8 +10,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sjh.news.Domain.User;
-import com.sjh.news.Executor.CachedExecutorService;
 import com.sjh.news.R;
+import com.sjh.news.StaicInfo.EmailConfirmInfo;
 import com.sjh.news.StaicInfo.UserInfo;
 import com.sjh.news.Util.EmailUtil;
 
@@ -69,6 +69,10 @@ public class RegisterActivity extends Activity {
      * 获取邮箱验证码
      */
     public void getEmailConfirmCode(View v) {
+        String to = txt_email.getText().toString();
+        if (to.length() < 1) {
+            return;
+        }
         if(getEmailConfirmCodeAble) {
             getEmailConfirmCodeAble = false;
             /*CachedExecutorService.cachedExecutorService.submit(new Runnable() {
@@ -77,7 +81,7 @@ public class RegisterActivity extends Activity {
 
                 }
             });*/
-            new Thread(new EmailUtil(btn_getEmailConfirmCode, "RegisterActivity")).start();
+            new Thread(new EmailUtil(btn_getEmailConfirmCode, "RegisterActivity", to)).start();
             /*new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -118,6 +122,10 @@ public class RegisterActivity extends Activity {
                     Toast.makeText(RegisterActivity.this, "已存在该用户名", Toast.LENGTH_LONG).show();
                     return;
                 } else {
+                    if (!EmailConfirmInfo.code.equals(txt_emailConfirmCode.getText().toString())) {
+                        Toast.makeText(RegisterActivity.this, "验证码不正确", Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     //注册成功，记录基本信息
                     UserInfo.username = username;
                     UserInfo.email = email;

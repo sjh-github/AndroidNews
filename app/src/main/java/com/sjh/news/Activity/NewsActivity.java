@@ -2,7 +2,10 @@ package com.sjh.news.Activity;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -10,6 +13,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -18,6 +22,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -39,7 +45,9 @@ import com.sjh.news.Util.JsonUtil;
 import com.sjh.news.Util.MD5Util;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -49,6 +57,7 @@ import okhttp3.Response;
 public class NewsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private ImageView img_userImage;
     private TextView txt_username;
     private TextView txt_email;
     //设置新闻ListView & Adapter
@@ -58,6 +67,7 @@ public class NewsActivity extends AppCompatActivity
     public NewsAdapter newsAdapter;
 
     private ActionBar actionBar;
+    //private SQLiteDatabase db;
 
 
     @Override
@@ -76,14 +86,17 @@ public class NewsActivity extends AppCompatActivity
         LinearLayout linearLayout = (LinearLayout) groupPollingAddress.inflate(R.layout.nav_header_login, null);
         txt_username = linearLayout.findViewById(R.id.txt_username);
         txt_email = linearLayout.findViewById(R.id.txt_email);
+        img_userImage = linearLayout.findViewById(R.id.imageView);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //db = openOrCreateDatabase("user.db", Context.MODE_PRIVATE, null);
+
         interestReCal("推荐");
 
         if (!"username".equals(UserInfo.username) && txt_username != null) {
-            System.out.println("Set UserName");
+            System.out.println("-------------------Set UserName");
             txt_username.setText("465");
         }
         if (!"email".equals(UserInfo.email) && txt_email != null) {
@@ -181,12 +194,47 @@ public class NewsActivity extends AppCompatActivity
         requestNewRecommend();
     }
 
+    public void updateCustomTag(View view) {
+        Toast.makeText(NewsActivity.this, "点击头像", Toast.LENGTH_LONG).show();
+    }
+
     private void interestReCal(String interestTag) {
         int total = 0;
         User currentUser = null;
-        for (User u : UserInfo.userArrayList) {
-            if (u.getUsername().equals(UserInfo.username)) {
-                currentUser = u;
+        /*Cursor userCursor = db.query("userdb", null, null, null, null, null, null);
+        if (userCursor.moveToFirst()) {
+            for (int i = 0; i < userCursor.getCount(); i++) {
+                userCursor.move(i);
+                String dbusername = userCursor.getString(userCursor.getColumnIndex("username"));
+                String dbpassword = userCursor.getString(userCursor.getColumnIndex("password"));
+                String dbemail = userCursor.getString(userCursor.getColumnIndex("email"));
+                Integer dbtechnologyNum = userCursor.getInt(userCursor.getColumnIndex("technology"));
+                Integer dbfunNum = userCursor.getInt(userCursor.getColumnIndex("fun"));
+                Integer dbmilitaryNum = userCursor.getInt(userCursor.getColumnIndex("military"));
+                Integer dbitNum = userCursor.getInt(userCursor.getColumnIndex("it"));
+                Integer dbfootballNum = userCursor.getInt(userCursor.getColumnIndex("football"));
+                Integer dbnbaNum = userCursor.getInt(userCursor.getColumnIndex("nba"));
+                User user = new User(dbusername, dbpassword, dbemail);
+                Map<String, Integer> map = new HashMap<>();
+                map.put(Interests.TECHNOLOGY, dbtechnologyNum);
+                map.put(Interests.FUN, dbfunNum);
+                map.put(Interests.MILITARY, dbmilitaryNum);
+                map.put(Interests.IT, dbitNum);
+                map.put(Interests.FOOTBALL, dbfootballNum);
+                map.put(Interests.NBA, dbnbaNum);
+                user.setUserInterest(map);
+                System.out.println(map.keySet());
+                System.out.println(map.values());
+                System.out.println("=-*: " + user.toString());
+                UserInfo.userArrayList.add(user);
+                System.out.println("=-*: " + UserInfo.userArrayList.get(0).toString());
+            }
+        }
+        userCursor.close();
+        System.out.println(UserInfo.userArrayList.get(0).toString());*/
+        for (User user : UserInfo.userArrayList) {
+            if (user.getUsername().equals(UserInfo.username)) {
+                currentUser = user;
                 break;
             }
         }
@@ -210,6 +258,18 @@ public class NewsActivity extends AppCompatActivity
                 currentUser.getUserInterest().put(Interests.NBA, currentUser.getUserInterest().get(Interests.NBA) + 1);
                 break;
         }
+
+        //写入数据库
+        /*String sql = "update userdb set technology = " + currentUser.getUserInterest().get(Interests.TECHNOLOGY) + ", "
+                                        + "fun = " + currentUser.getUserInterest().get(Interests.FUN) + ", "
+                                        + "military = " + currentUser.getUserInterest().get(Interests.MILITARY) + ", "
+                                        + "it = " + currentUser.getUserInterest().get(Interests.IT) + ", "
+                                        + "football = " + currentUser.getUserInterest().get(Interests.FOOTBALL) + ", "
+                                        + "nba = " + currentUser.getUserInterest().get(Interests.NBA) + " where username = \'" + currentUser.getUsername() + "\'";
+        System.out.println("-----:" + sql);
+        db.execSQL(sql);*/
+
+
         for (Integer num : currentUser.getUserInterest().values()) {
             total += num;
         }
@@ -342,7 +402,7 @@ public class NewsActivity extends AppCompatActivity
             closeDrawer();
             Intent toLoginPageIntent = new Intent(NewsActivity.this, LoginActivity.class);
             startActivity(toLoginPageIntent);
-        }/* else if (id == R.id.nav_custom) {
+        } else if (id == R.id.nav_custom) {
 
             closeDrawer();
             //自定义标签未设置
@@ -358,12 +418,24 @@ public class NewsActivity extends AppCompatActivity
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 String inputName = inputServer.getText().toString();
-                                TagInfo.customTag = inputName;
+                                if (inputName.length() > 0) {
+                                    TagInfo.customTag = inputName;
+                                    TagInfo.currentTag = TagInfo.customTag;
+                                    getCustomNews();
+                                    actionBar.setTitle(TagInfo.customTag);
+                                    closeDrawer();
+                                } else {
+                                    Toast.makeText(NewsActivity.this, "关键字不能为空", Toast.LENGTH_LONG).show();
+                                }
                             }
                         });
                 builder.show();
             } else {
-
+                //isCurrentPage(HttpInfo.URL_CUSTOM);
+                TagInfo.currentTag = TagInfo.customTag;
+                getCustomNews();
+                actionBar.setTitle(TagInfo.customTag);
+                closeDrawer();
             }
 
         } else if (id == R.id.nav_updateCustomTag) {
@@ -380,11 +452,20 @@ public class NewsActivity extends AppCompatActivity
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             String inputName = inputServer.getText().toString();
-                            TagInfo.customTag = inputName;
+                            if (inputName.length() > 0) {
+                                TagInfo.customTag = inputName;
+                                TagInfo.currentTag = TagInfo.customTag;
+                                getCustomNews();
+                                actionBar.setTitle(TagInfo.customTag);
+                                closeDrawer();
+                            } else {
+                                TagInfo.customTag = "";
+                                closeDrawer();
+                            }
                         }
                     });
             builder.show();
-        }*/
+        }
         return true;
     }
 
@@ -463,7 +544,6 @@ public class NewsActivity extends AppCompatActivity
                     newUrl = "https://api.xinwen.cn/news/hot?category=Tech&size=" + HttpInfo.NUM + "&signature=" + signature + "&timestamp=" + timestamp + "&access_key=fFZK5gezvwnEZ8CV";
             }
         }
-        System.out.println("***url: " + newUrl);
         HttpUtil.sendOkHttpRequest(newUrl, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -551,5 +631,27 @@ public class NewsActivity extends AppCompatActivity
         if (HttpInfo.nbaNum != 0) {
             requestNew(URL_NBA, true, false);
         }
+    }
+
+    /**
+     * 获取自定义关键字新闻
+     */
+    private void getCustomNews() {
+        if (TagInfo.customTag.equals("")) {
+            Toast.makeText(NewsActivity.this, "您还未设置关键字", Toast.LENGTH_LONG).show();
+            return;
+        }
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        String signature;
+        try {
+            signature = MD5Util.getMD5Str(HttpInfo.SecretKeyValue + timestamp + HttpInfo.AccessKeyValue);
+        } catch (Exception e) {
+            Toast.makeText(NewsActivity.this, "数据加密错误", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+            return;
+        }
+        String searchURL = "https://api.xinwen.cn/news/search?q=" + TagInfo.customTag + "&size=" + HttpInfo.NUM + "&signature=" + signature + "&order=relevance&timestamp=" + timestamp +"&access_key=fFZK5gezvwnEZ8CV";
+        requestNew(searchURL, false, true);
+        refreshLayout.setRefreshing(true);
     }
 }

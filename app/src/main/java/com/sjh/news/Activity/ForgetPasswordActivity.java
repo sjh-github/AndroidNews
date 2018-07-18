@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.sjh.news.Executor.CachedExecutorService;
 import com.sjh.news.R;
+import com.sjh.news.StaicInfo.EmailConfirmInfo;
 import com.sjh.news.StaicInfo.UserInfo;
 import com.sjh.news.Util.EmailUtil;
 
@@ -65,6 +66,10 @@ public class ForgetPasswordActivity extends Activity {
      * 获取邮箱验证码
      */
     public void getEmailConfirmCode(View v) {
+        String to = txt_email.getText().toString();
+        if (to.length() < 1) {
+            return;
+        }
         if(getEmailConfirmCodeAble) {
             getEmailConfirmCodeAble = false;
             /*CachedExecutorService.cachedExecutorService.submit(new Runnable() {
@@ -73,7 +78,7 @@ public class ForgetPasswordActivity extends Activity {
 
                 }
             });*/
-            new Thread(new EmailUtil(btn_getEmailConfirmCode, "ForgetPasswordActivity")).start();
+            new Thread(new EmailUtil(btn_getEmailConfirmCode, "ForgetPasswordActivity", to)).start();
             /*new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -105,7 +110,10 @@ public class ForgetPasswordActivity extends Activity {
         passwordConfirm = txt_passwordConfirm.getText().toString();
         if (email != null && emailConfirmCode != null && passwordConfirm != null && password != null &&
                 emailConfirmCode.length() > 0 && email.length() > 0 && password.length() > 0 && passwordConfirm.length() > 0) {
-            Toast.makeText(ForgetPasswordActivity.this, email + " - " + emailConfirmCode + " - " + password + " - " + passwordConfirm, Toast.LENGTH_SHORT).show();
+            if (!EmailConfirmInfo.code.equals(txt_emailConfirmCode.getText().toString())) {
+                Toast.makeText(ForgetPasswordActivity.this, "验证码不正确", Toast.LENGTH_LONG).show();
+                return;
+            }
             //重置成功，记录基本信息
             UserInfo.email = email;
             UserInfo.password = password;

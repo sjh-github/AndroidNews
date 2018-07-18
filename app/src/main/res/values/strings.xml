@@ -18,7 +18,7 @@
     <string name="btn_getEmailConfirmCode">获取验证码：</string>
     <string name="btn_resetPassword">重置密码</string>
     
-    <string name="defaultUsername">这是个昵称</string>
+    <string name="defaultUsername">sjh</string>
     <string name="defaultEmail">252355189@qq.com</string>
     
     <string name="recommend">推荐</string>
@@ -40,4 +40,6 @@
     <string name="getNewsError">""</string>
     <string name="search">搜索</string>
     <string name="search_hint">输入搜索内容</string>
+    <string name="updateCustomTag">修改关键字</string>
+    <string name="logout">退出</string>
 </resources>
