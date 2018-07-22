@@ -35,7 +35,7 @@ public class InterestChoiceActivity extends Activity {
     private CheckBox checkBox_NBA;
     private EditText txt_CustomTag;
     private Button btn_submit;
-    //private SQLiteDatabase db;
+    private SQLiteDatabase db;
     //用户信息
     private User user;
     private Map<String, Integer> userInterests;
@@ -63,7 +63,7 @@ public class InterestChoiceActivity extends Activity {
         user = new User(UserInfo.username, UserInfo.password, UserInfo.email);
         userInterests = new HashMap<>();
 
-        //db = openOrCreateDatabase("user.db", Context.MODE_PRIVATE, null);
+        db = openOrCreateDatabase("user.db", Context.MODE_PRIVATE, null);
     }
 
     /**
@@ -122,10 +122,10 @@ public class InterestChoiceActivity extends Activity {
         //发送兴趣标签
         user.setUserInterest(userInterests);
         UserInfo.userArrayList.add(user);
-        /*String sql = "INSERT INTO userdb(username, password, email, technology, fun, military, it, football, nba) " +
+        String sql = "INSERT INTO userdb(username, password, email, technology, fun, military, it, football, nba) " +
                 "values (" + "\'" + UserInfo.username + "\', \'" + UserInfo.password + "\', \'" + UserInfo.email + "\', " + HttpInfo.technologyNum + ", "
                 + HttpInfo.funNum + ", " + HttpInfo.militaryNum + ", " + HttpInfo.itNum + ", " + HttpInfo.footballNum + ", " + HttpInfo.nbaNum + ")";
-        db.execSQL(sql);*/
+        db.execSQL(sql);
 
         //页面跳转
         Intent toNewsPageIntent = new Intent(InterestChoiceActivity.this, NewsActivity.class);

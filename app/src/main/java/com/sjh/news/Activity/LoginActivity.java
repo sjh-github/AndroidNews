@@ -35,7 +35,7 @@ public class LoginActivity extends Activity {
 
     private String username;
     private String password;
-    //private SQLiteDatabase db;
+    private SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,9 +65,9 @@ public class LoginActivity extends Activity {
         user.setUserInterest(map);
         UserInfo.userArrayList.add(user);
         //数据库初始化
-        //db = openOrCreateDatabase("user.db", Context.MODE_PRIVATE, null);
+        db = openOrCreateDatabase("user.db", Context.MODE_PRIVATE, null);
         //db.execSQL("DROP TABLE IF EXISTS userdb");
-        //db.execSQL("create table if not exists userdb (username text primary key, password text, email text, technology integer, fun integer, military integer, it integer, football integer, nba integer)");
+        db.execSQL("create table if not exists userdb (username text primary key, password text, email text, technology integer, fun integer, military integer, it integer, football integer, nba integer)");
 
     }
 
@@ -115,7 +115,7 @@ public class LoginActivity extends Activity {
      * 登陆验证
      */
     private boolean login(String username, String password) {
-       /* Cursor userCursor = db.query("userdb", new String[]{"username", "password", "email"}, null, null, null, null, null);
+       Cursor userCursor = db.query("userdb", new String[]{"username", "password", "email"}, null, null, null, null, null);
         if (userCursor.moveToFirst()) {
            for (int i = 0; i < userCursor.getCount(); i++) {
                userCursor.move(i);
@@ -125,7 +125,7 @@ public class LoginActivity extends Activity {
                UserInfo.userArrayList.add(new User(dbusername, dbpassword, dbemail));
            }
         }
-        userCursor.close();*/
+        userCursor.close();
         for (User user : UserInfo.userArrayList) {
             if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
                 return true;
